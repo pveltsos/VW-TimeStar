@@ -1,0 +1,123 @@
+// ==UserScript==
+// @name         TimeStar - Hide Weekend Days 3
+// @namespace    http://tampermonkey.net/
+// @version      0.3
+// @description  Get more MS rewards search points!
+// @author       PV
+// @match        https://timestar.insperity.com/VWC/*
+// @require      http://code.jquery.com/jquery-latest.js
+// ==/UserScript==
+
+(function() {
+    'use strict';
+    let areWeekendRowsHidden = false; // Initial state
+    let arePrevWeeksRowsHidden = false; // Initial state
+    let showAlerts = false; // Initial state
+
+    if (showAlerts) { alert("in Fx!"); };
+
+    // Function to hide weekend divs
+    function hideWeekendDivs() {
+        if (showAlerts) { alert("in hidewkend!"); };
+        // Define the attribute name containing the date (e.g., data-date) in US format mm/dd/yyyy
+        const dateAttribute = 'data-date';
+        // Get all <div> elements with the specified attribute
+        const divElements = document.querySelectorAll(`div[${dateAttribute}]`);
+        // Iterate through each <div> element
+        divElements.forEach(div => {
+            const dateString = div.getAttribute(dateAttribute);
+            const date = new Date(dateString);
+            // Check if the date corresponds to a weekend (Saturday or Sunday)
+            if (date.getDay() === 0 || date.getDay() === 6) {
+                // Hide the <div> element
+                //div.style.display = 'none';
+                div.style.display = areWeekendRowsHidden ? 'none' : 'block';
+                div.style.backgroundColor = '#FFF5EE';
+            }
+        });
+    }
+
+    function hidePrevDays() {
+        if (showAlerts) { alert("in hideprevdays!"); };
+        // Define the attribute name containing the date (e.g., data-date)
+        const dateAttribute = 'data-date';
+        // Get all <div> elements with the specified attribute
+        const divElements = document.querySelectorAll(`div[${dateAttribute}]`);
+        // Get today's date
+        const today = new Date();
+        // Iterate through each <div> element
+        divElements.forEach(div => {
+            const dateString = div.getAttribute(dateAttribute);
+            const date = new Date(dateString);
+            // Check if the date corresponds to a weekend (Saturday or Sunday)
+            if (date <= today) {
+                // Hide the <div> element
+                div.style.display = arePrevWeeksRowsHidden ? 'none' : 'block';
+            }
+        });
+    }
+
+    function addBtnWkendRows() {
+        if (showAlerts) { alert("in addbtn!"); };
+
+        // Create the toggle button and add it to the top of the page
+        const toggleBtnWkndRws = document.createElement('button');
+        toggleBtnWkndRws.textContent = 'Toggle Weekend Rows';
+        toggleBtnWkndRws.style.position = 'inherit';
+        toggleBtnWkndRws.style.marginRight = '20px';
+        toggleBtnWkndRws.classList.add("form_button");
+        toggleBtnWkndRws.classList.add("button");
+        toggleBtnWkndRws.classList.add("nsp-button");
+        toggleBtnWkndRws.classList.add("lg");
+        toggleBtnWkndRws.classList.add("radius");
+        toggleBtnWkndRws.classList.add("addBtn");
+        toggleBtnWkndRws.classList.add("primary");
+
+        const element = document.querySelector('.action-button-wrap');
+        if (element) {
+            element.appendChild(toggleBtnWkndRws);
+            //document.body.appendChild(toggleButton);
+        }
+
+        // Add event listener to the button
+        toggleBtnWkndRws.addEventListener('click', () => {
+            areWeekendRowsHidden = !areWeekendRowsHidden;
+            hideWeekendDivs();
+        });
+    }
+
+   function addBtnPrevWeeks() {
+        if (showAlerts) { alert("in addbtn!"); };
+
+        // Create the toggle button and add it to the top of the page
+        const toggleBtnPrevDays = document.createElement('button');
+        toggleBtnPrevDays.textContent = 'Toggle Previous Days';
+        toggleBtnPrevDays.style.position = 'inherit';
+        toggleBtnPrevDays.style.marginRight = '20px';
+        toggleBtnPrevDays.classList.add("form_button");
+        toggleBtnPrevDays.classList.add("button");
+        toggleBtnPrevDays.classList.add("nsp-button");
+        toggleBtnPrevDays.classList.add("lg");
+        toggleBtnPrevDays.classList.add("radius");
+        toggleBtnPrevDays.classList.add("addBtn");
+        toggleBtnPrevDays.classList.add("primary");
+
+        const element = document.querySelector('.action-button-wrap');
+        if (element) {
+            element.appendChild(toggleBtnPrevDays);
+        }
+
+        // Add event listener to the button
+        toggleBtnPrevDays.addEventListener('click', () => {
+            arePrevWeeksRowsHidden = !arePrevWeeksRowsHidden;
+            hidePrevDays();
+        });
+    }
+
+
+    // Execute the function after a 10-second delay
+    // setTimeout(hideWeekendDivs, 6000);
+    setTimeout(addBtnWkendRows, 5000);
+    setTimeout(addBtnPrevWeeks, 6000);
+
+})();
