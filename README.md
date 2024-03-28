@@ -8,4 +8,4 @@ TamperMonkey is required and available as a plug-in for most browswers via their
 
 Works only https://timestar.insperity.com/VWC/#-page=worksheet and does require a refresh after save as the code is client side ;)
 
-![demo.gif](https://github.com/pveltsos/VW-TimeStar/blob/main/demo.gif?raw=true "Demo")
+![demo.gif](msedge_1YlWZQKyJc.gif?raw=true "Demo")
