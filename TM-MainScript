@@ -12,6 +12,7 @@
     'use strict';
     let areWeekendRowsHidden = false; // Initial state
     let arePrevWeeksRowsHidden = false; // Initial state
+    let isTodayHidden = false; // Initial state
     let showAlerts = false; // Initial state
 
     if (showAlerts) { alert("in Fx!"); };
@@ -57,6 +58,30 @@
         });
     }
 
+    function toggleToday() {
+        if (showAlerts) { alert("in today!"); };
+        // Define the attribute name containing the date (e.g., data-date)
+        const dateAttribute = 'data-date';
+        // Get all <div> elements with the specified attribute
+        const divElements = document.querySelectorAll(`div[${dateAttribute}]`);
+        // Get today's date
+        var today = new Date();
+        const dd = String(today.getDate()).padStart(2, '0');
+        const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+        const yyyy = today.getFullYear();
+        const formattedToday = mm + '/' + dd + '/' + yyyy;
+        // Iterate through each <div> element
+        divElements.forEach(div => {
+            const dateString = div.getAttribute(dateAttribute);
+            const date = new Date(dateString);
+            // Check if the date corresponds to a weekend (Saturday or Sunday)
+            if (dateString === formattedToday) {
+                // Hide the <div> element
+                div.style.display = isTodayHidden ? 'none' : 'block';
+            }
+        });
+    }
+
     function addBtnWkendRows() {
         if (showAlerts) { alert("in addbtn!"); };
 
@@ -86,7 +111,7 @@
         });
     }
 
-   function addBtnPrevWeeks() {
+   function addBtnPrevDays() {
         if (showAlerts) { alert("in addbtn!"); };
 
         // Create the toggle button and add it to the top of the page
@@ -110,14 +135,43 @@
         // Add event listener to the button
         toggleBtnPrevDays.addEventListener('click', () => {
             arePrevWeeksRowsHidden = !arePrevWeeksRowsHidden;
+            isTodayHidden =! isTodayHidden;
             hidePrevDays();
         });
     }
 
+   function addBtnToday() {
+        if (showAlerts) { alert("in addbtn!"); };
+
+        // Create the toggle button and add it to the top of the page
+        const toggleBtnToday = document.createElement('button');
+        toggleBtnToday.textContent = 'Toggle Today';
+        toggleBtnToday.style.position = 'inherit';
+        toggleBtnToday.style.marginRight = '20px';
+        toggleBtnToday.classList.add("form_button");
+        toggleBtnToday.classList.add("button");
+        toggleBtnToday.classList.add("nsp-button");
+        toggleBtnToday.classList.add("lg");
+        toggleBtnToday.classList.add("radius");
+        toggleBtnToday.classList.add("addBtn");
+        toggleBtnToday.classList.add("primary");
+
+        const element = document.querySelector('.action-button-wrap');
+        if (element) {
+            element.appendChild(toggleBtnToday);
+        }
+
+        // Add event listener to the button
+        toggleBtnToday.addEventListener('click', () => {
+            isTodayHidden = !isTodayHidden;
+            toggleToday();
+        });
+    }
 
     // Execute the function after a 10-second delay
     // setTimeout(hideWeekendDivs, 6000);
-    setTimeout(addBtnWkendRows, 5000);
-    setTimeout(addBtnPrevWeeks, 6000);
+    setTimeout(addBtnWkendRows, 4000);
+    setTimeout(addBtnPrevDays, 5000);
+    setTimeout(addBtnToday, 6000);
 
 })();
