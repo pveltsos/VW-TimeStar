@@ -1,11 +1,13 @@
 # VW-TimeStar
 
-TamperMonkey script to optimize time entryt for the timesheet from TimeStar by
+TamperMonkey script to optimize time entry on the timesheet tabe from TimeStar by
 - hiding the weekend rows
 - hiding the previous days
 
-TamperMonkey is required and available as a plug-in for most browswers via their respective extension stores.
+TamperMonkey is required and available as a plug-in for most browsers via their respective extension stores.
+-> https://www.tampermonkey.net/
 
-Works only https://timestar.insperity.com/VWC/#-page=worksheet and does require a refresh after save as the code is client side ;)
+This script only works on the page and requires you to load this URL https://timestar.insperity.com/VWC/#-page=worksheet.
+Note that it does require a refresh after submitting or navigating across other pages as the code is client-side and executed onload.
 
 ![demo.gif](msedge_1YlWZQKyJc.gif?raw=true "Demo")
