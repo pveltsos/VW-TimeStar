@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         TimeStar - Hide Weekend Days 5
+// @name         TimeStar - Hide Weekend Days 6
 // @namespace    http://tampermonkey.net/
-// @version      0.5
+// @version      0.6
 // @description  Get more MS rewards search points!
 // @author       PV
 // @match        https://timestar.insperity.com/VWC/*
@@ -14,10 +14,53 @@
     let areWeekendRowsHidden = false; // Initial state
     let arePrevWeeksRowsHidden = false; // Initial state
     let areFutureWeeksRowsHidden = false; // Initial state
-    let isTodayHidden = false; // Initial state
     let showAlerts = false; // Initial state
 
     if (showAlerts) { alert("in Fx!"); };
+
+
+    // Function format rows
+    function formatRows() {
+        console.log('running formatRows!');
+        const dateAttribute = 'data-date';
+        const divElements = document.querySelectorAll(`div[${dateAttribute}]`);
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 1, 0, 0); // Set time for tomorrow  to 00:01
+        const tomorrow01 = tomorrow;
+        const dd = String(today.getDate()).padStart(2, '0');
+        const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+        const yyyy = today.getFullYear();
+        const formattedToday = mm + '/' + dd + '/' + yyyy;
+        console.log(today);
+        console.log(tomorrow01);
+        console.log(formattedToday);
+        divElements.forEach(div => {
+            const dateString = div.getAttribute(dateAttribute);
+            const date = new Date(dateString);
+            date.setHours(23,59,0,0); // for previous days
+            const date00 = date; // for today
+            console.log(date00);
+            // weekend
+            if (date.getDay() === 0 || date.getDay() === 6) {
+                div.style.backgroundColor = 'Silver';
+            }
+            // previous rows
+            else if (date00 <= today) {
+                div.style.backgroundColor = 'AliceBlue';
+            }
+            // future rows
+            else if (date00 >= tomorrow01) {
+                div.style.backgroundColor = 'Lavender';
+            }
+            // today
+            else if (dateString === formattedToday) {
+                div.style.backgroundColor = 'lightskyblue';
+            }
+        });
+    }
+
 
     // Function to hide weekend divs
     function hideWeekendDivs() {
@@ -119,9 +162,16 @@
             if (dateString === formattedToday) {
                 // Hide the <div> element
                 div.style.backgroundColor = 'lightskyblue';
-                div.style.display = isTodayHidden ? 'none' : 'block';
+                //div.style.display = isTodayHidden ? 'none' : 'block';
             }
         });
+    }
+
+    function showOnlyToday() {
+        console.log('running showOnlyToday!');
+        formatRows();
+        hideFutureDays();
+        hidePrevDays();
     }
 
     function addBtnWkendRows() {
@@ -141,6 +191,9 @@
         toggleBtnWkndRws.classList.add("radius");
         toggleBtnWkndRws.classList.add("addBtn");
         toggleBtnWkndRws.classList.add("primary");
+        toggleBtnWkndRws.style.backgroundColor = 'Silver';
+        toggleBtnWkndRws.style.color = 'Black';
+
 
         const element = document.querySelector('.action-button-wrap');
         if (element) {
@@ -172,6 +225,8 @@
         toggleBtnPrevDays.classList.add("radius");
         toggleBtnPrevDays.classList.add("addBtn");
         toggleBtnPrevDays.classList.add("primary");
+        toggleBtnPrevDays.style.backgroundColor = 'AliceBlue';
+        toggleBtnPrevDays.style.color = 'Black';
 
         const element = document.querySelector('.action-button-wrap');
         if (element) {
@@ -203,6 +258,8 @@
         toggleBtnFutureDays.classList.add("radius");
         toggleBtnFutureDays.classList.add("addBtn");
         toggleBtnFutureDays.classList.add("primary");
+        toggleBtnFutureDays.style.backgroundColor = 'Lavender';
+        toggleBtnFutureDays.style.color = 'Black';
 
         const element = document.querySelector('.action-button-wrap');
         if (element) {
@@ -224,7 +281,7 @@
 
         // Create the toggle button and add it to the top of the page
         const toggleBtnToday = document.createElement('button');
-        toggleBtnToday.textContent = 'Toggle Today';
+        toggleBtnToday.textContent = 'Show Only Today';
         toggleBtnToday.id = 'customBtnToday';
         toggleBtnToday.style.position = 'inherit';
         toggleBtnToday.style.marginRight = '20px';
@@ -235,6 +292,8 @@
         toggleBtnToday.classList.add("radius");
         toggleBtnToday.classList.add("addBtn");
         toggleBtnToday.classList.add("primary");
+        toggleBtnToday.style.backgroundColor = 'lightskyblue';
+        toggleBtnToday.style.color = 'Black';
 
         const element = document.querySelector('.action-button-wrap');
 
@@ -244,8 +303,11 @@
 
         // Add event listener to the button
         toggleBtnToday.addEventListener('click', () => {
-            isTodayHidden = !isTodayHidden;
-            toggleToday();
+            //isTodayHidden = !isTodayHidden;
+            arePrevWeeksRowsHidden = !arePrevWeeksRowsHidden;
+            areFutureWeeksRowsHidden = !areFutureWeeksRowsHidden;
+            //toggleToday();
+            showOnlyToday();
         });
     }
 
@@ -256,6 +318,9 @@
         // setTimeout(hideWeekendDivs, 6000);
         console.log('Adding custom buttons!');
 
+        const btnToday = document.getElementById('customBtnToday');
+        if (!btnToday) { setTimeout(addBtnToday, 3900); }
+
         const btnWkndRws = document.getElementById('customBtnWkndRws');
         if (!btnWkndRws) { setTimeout(addBtnWkendRows, 4000); }
 
@@ -264,15 +329,13 @@
 
         const btnFutureDay = document.getElementById('customBtnFutureDays');
         if (!btnFutureDay) { setTimeout(addBtnFutureDays, 4200); }
-
-        const btnToday = document.getElementById('customBtnToday');
-        if (!btnToday) { setTimeout(addBtnToday, 4300); }
     }
 
     // Function to run when the page completes loading
     function onPageLoad() {
         console.log('Page loaded!');
         addCustomBtns();
+        formatRows();
         // Add your custom logic here
     }
 
@@ -281,6 +344,7 @@
          if (showAlerts) { alert("in onRefreshOrBlur!"); };
         console.log('Page refreshed or blurred!');
         addCustomBtns();
+        formatRows();
         // Add your custom logic here
     }
 
