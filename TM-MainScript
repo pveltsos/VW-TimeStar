@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         TimeStar - Hide Weekend Days 3
+// @name         TimeStar - Hide Weekend Days 5
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      0.5
 // @description  Get more MS rewards search points!
 // @author       PV
 // @match        https://timestar.insperity.com/VWC/*
@@ -10,8 +10,10 @@
 
 (function() {
     'use strict';
+
     let areWeekendRowsHidden = false; // Initial state
     let arePrevWeeksRowsHidden = false; // Initial state
+    let areFutureWeeksRowsHidden = false; // Initial state
     let isTodayHidden = false; // Initial state
     let showAlerts = false; // Initial state
 
@@ -19,6 +21,7 @@
 
     // Function to hide weekend divs
     function hideWeekendDivs() {
+        console.log('running hideWeekendDivs!');
         if (showAlerts) { alert("in hidewkend!"); };
         // Define the attribute name containing the date (e.g., data-date) in US format mm/dd/yyyy
         const dateAttribute = 'data-date';
@@ -32,13 +35,14 @@
             if (date.getDay() === 0 || date.getDay() === 6) {
                 // Hide the <div> element
                 //div.style.display = 'none';
-                div.style.display = areWeekendRowsHidden ? 'none' : 'block';
                 div.style.backgroundColor = '#FFF5EE';
+                div.style.display = areWeekendRowsHidden ? 'none' : 'block';
             }
         });
     }
 
     function hidePrevDays() {
+        console.log('running hidePrevDays!');
         if (showAlerts) { alert("in hideprevdays!"); };
         // Define the attribute name containing the date (e.g., data-date)
         const dateAttribute = 'data-date';
@@ -46,19 +50,56 @@
         const divElements = document.querySelectorAll(`div[${dateAttribute}]`);
         // Get today's date
         const today = new Date();
+        console.log('today is:' + today);
         // Iterate through each <div> element
         divElements.forEach(div => {
             const dateString = div.getAttribute(dateAttribute);
             const date = new Date(dateString);
+            date.setHours(23,59,0,0);
+            const date00 = date;
+            console.log(date00);
             // Check if the date corresponds to a weekend (Saturday or Sunday)
-            if (date <= today) {
+            if (date00 <= today) {
                 // Hide the <div> element
                 div.style.display = arePrevWeeksRowsHidden ? 'none' : 'block';
             }
         });
     }
 
+    function hideFutureDays() {
+        console.log('running hideFutureDays!');
+        if (showAlerts) { alert("in hidefuturedays!"); };
+        // Define the attribute name containing the date (e.g., data-date)
+        const dateAttribute = 'data-date';
+        // Get all <div> elements with the specified attribute
+        const divElements = document.querySelectorAll(`div[${dateAttribute}]`);
+        // Get today's date
+        const today = new Date();
+        //const tomorrow = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 1, 0, 0); // Set time to 00:01
+        const tomorrow01 = tomorrow;
+        // Tomorrow's date in format dd/mm/yyyy: 26/4/2024
+        console.log(tomorrow01);
+        //tomorrow.setDate(today.getDate() + 1);
+        // Iterate through each <div> element
+        divElements.forEach(div => {
+            const dateString = div.getAttribute(dateAttribute);
+            const date = new Date(dateString);
+            date.setHours(0,2,0,0);
+            const date00 = date;
+            console.log(date00);
+            // Check if the date corresponds to a weekend (Saturday or Sunday)
+            if (date00 >= tomorrow01) {
+                // Hide the <div> element
+                div.style.display = areFutureWeeksRowsHidden ? 'none' : 'block';
+            }
+        });
+    }
+
     function toggleToday() {
+        console.log('running toggleToday!');
         if (showAlerts) { alert("in today!"); };
         // Define the attribute name containing the date (e.g., data-date)
         const dateAttribute = 'data-date';
@@ -77,17 +118,20 @@
             // Check if the date corresponds to a weekend (Saturday or Sunday)
             if (dateString === formattedToday) {
                 // Hide the <div> element
+                div.style.backgroundColor = 'lightskyblue';
                 div.style.display = isTodayHidden ? 'none' : 'block';
             }
         });
     }
 
     function addBtnWkendRows() {
+        console.log('running addBtnWkendRows!');
         if (showAlerts) { alert("in addbtn!"); };
 
         // Create the toggle button and add it to the top of the page
         const toggleBtnWkndRws = document.createElement('button');
         toggleBtnWkndRws.textContent = 'Toggle Weekend Rows';
+        toggleBtnWkndRws.id = 'customBtnWkndRws';
         toggleBtnWkndRws.style.position = 'inherit';
         toggleBtnWkndRws.style.marginRight = '20px';
         toggleBtnWkndRws.classList.add("form_button");
@@ -112,11 +156,13 @@
     }
 
    function addBtnPrevDays() {
-        if (showAlerts) { alert("in addbtn!"); };
+        console.log('running addBtnPrevDays!');
+       if (showAlerts) { alert("in addbtn!"); };
 
         // Create the toggle button and add it to the top of the page
         const toggleBtnPrevDays = document.createElement('button');
         toggleBtnPrevDays.textContent = 'Toggle Previous Days';
+        toggleBtnPrevDays.id = 'customBtnPrevDays';
         toggleBtnPrevDays.style.position = 'inherit';
         toggleBtnPrevDays.style.marginRight = '20px';
         toggleBtnPrevDays.classList.add("form_button");
@@ -135,17 +181,51 @@
         // Add event listener to the button
         toggleBtnPrevDays.addEventListener('click', () => {
             arePrevWeeksRowsHidden = !arePrevWeeksRowsHidden;
-            isTodayHidden =! isTodayHidden;
+            //isTodayHidden =! isTodayHidden;
             hidePrevDays();
         });
     }
 
+   function addBtnFutureDays() {
+       console.log('running addBtnFutureDays!');
+       if (showAlerts) { alert("in addbtn!"); };
+
+        // Create the toggle button and add it to the top of the page
+        const toggleBtnFutureDays = document.createElement('button');
+        toggleBtnFutureDays.textContent = 'Toggle Future Days';
+        toggleBtnFutureDays.id = 'customBtnFutureDays';
+        toggleBtnFutureDays.style.position = 'inherit';
+        toggleBtnFutureDays.style.marginRight = '20px';
+        toggleBtnFutureDays.classList.add("form_button");
+        toggleBtnFutureDays.classList.add("button");
+        toggleBtnFutureDays.classList.add("nsp-button");
+        toggleBtnFutureDays.classList.add("lg");
+        toggleBtnFutureDays.classList.add("radius");
+        toggleBtnFutureDays.classList.add("addBtn");
+        toggleBtnFutureDays.classList.add("primary");
+
+        const element = document.querySelector('.action-button-wrap');
+        if (element) {
+            element.appendChild(toggleBtnFutureDays);
+        }
+
+        // Add event listener to the button
+        toggleBtnFutureDays.addEventListener('click', () => {
+            areFutureWeeksRowsHidden = !areFutureWeeksRowsHidden;
+            //isTodayHidden =! isTodayHidden;
+            hideFutureDays();
+        });
+    }
+
+
    function addBtnToday() {
-        if (showAlerts) { alert("in addbtn!"); };
+        console.log('running addBtnToday!');
+       if (showAlerts) { alert("in addbtn!"); };
 
         // Create the toggle button and add it to the top of the page
         const toggleBtnToday = document.createElement('button');
         toggleBtnToday.textContent = 'Toggle Today';
+        toggleBtnToday.id = 'customBtnToday';
         toggleBtnToday.style.position = 'inherit';
         toggleBtnToday.style.marginRight = '20px';
         toggleBtnToday.classList.add("form_button");
@@ -157,8 +237,9 @@
         toggleBtnToday.classList.add("primary");
 
         const element = document.querySelector('.action-button-wrap');
+
         if (element) {
-            element.appendChild(toggleBtnToday);
+           element.appendChild(toggleBtnToday);
         }
 
         // Add event listener to the button
@@ -168,10 +249,46 @@
         });
     }
 
-    // Execute the function after a 10-second delay
-    // setTimeout(hideWeekendDivs, 6000);
-    setTimeout(addBtnWkendRows, 4000);
-    setTimeout(addBtnPrevDays, 5000);
-    setTimeout(addBtnToday, 6000);
+    function addCustomBtns() {
+         console.log('running addCustomBtns!');
+         if (showAlerts) { alert("in Add Custom Buttons!"); };
+        // Execute the function after a 10-second delay
+        // setTimeout(hideWeekendDivs, 6000);
+        console.log('Adding custom buttons!');
+
+        const btnWkndRws = document.getElementById('customBtnWkndRws');
+        if (!btnWkndRws) { setTimeout(addBtnWkendRows, 4000); }
+
+        const btnPrevDay = document.getElementById('customBtnPrevDays');
+        if (!btnPrevDay) { setTimeout(addBtnPrevDays, 4100); }
+
+        const btnFutureDay = document.getElementById('customBtnFutureDays');
+        if (!btnFutureDay) { setTimeout(addBtnFutureDays, 4200); }
+
+        const btnToday = document.getElementById('customBtnToday');
+        if (!btnToday) { setTimeout(addBtnToday, 4300); }
+    }
+
+    // Function to run when the page completes loading
+    function onPageLoad() {
+        console.log('Page loaded!');
+        addCustomBtns();
+        // Add your custom logic here
+    }
+
+    // Function to run when the page is refreshed or loses focus
+    function onRefreshOrBlur() {
+         if (showAlerts) { alert("in onRefreshOrBlur!"); };
+        console.log('Page refreshed or blurred!');
+        addCustomBtns();
+        // Add your custom logic here
+    }
+
+    // Execute onPageLoad when the page initially loads
+    onPageLoad();
+
+    // Execute onRefreshOrBlur when the page is refreshed or blurred
+    window.addEventListener('beforeunload', onRefreshOrBlur);
+    window.addEventListener('blur', onRefreshOrBlur);
 
 })();
