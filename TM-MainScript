@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         TimeStar - Hide Weekend Days 6
+// @name         TimeStar - Hide Weekend Days 7
 // @namespace    http://tampermonkey.net/
-// @version      0.6
+// @version      0.7
 // @description  Get more MS rewards search points!
 // @author       PV
 // @match        https://timestar.insperity.com/VWC/*
@@ -14,6 +14,7 @@
     let areWeekendRowsHidden = false; // Initial state
     let arePrevWeeksRowsHidden = false; // Initial state
     let areFutureWeeksRowsHidden = false; // Initial state
+    let isOnlyToday = false; //Initial state
     let showAlerts = false; // Initial state
 
     if (showAlerts) { alert("in Fx!"); };
@@ -172,6 +173,14 @@
         formatRows();
         hideFutureDays();
         hidePrevDays();
+        isOnlyToday = !isOnlyToday;
+        const btn2Update = document.getElementById('customBtnToday');
+        if (isOnlyToday) {
+            btn2Update.textContent = 'Show All Days';
+        }
+        else if (!isOnlyToday) {
+            btn2Update.textContent = 'Show Only Today';
+        }
     }
 
     function addBtnWkendRows() {
@@ -180,7 +189,7 @@
 
         // Create the toggle button and add it to the top of the page
         const toggleBtnWkndRws = document.createElement('button');
-        toggleBtnWkndRws.textContent = 'Toggle Weekend Rows';
+        toggleBtnWkndRws.textContent = 'Weekend Rows';
         toggleBtnWkndRws.id = 'customBtnWkndRws';
         toggleBtnWkndRws.style.position = 'inherit';
         toggleBtnWkndRws.style.marginRight = '20px';
@@ -214,7 +223,7 @@
 
         // Create the toggle button and add it to the top of the page
         const toggleBtnPrevDays = document.createElement('button');
-        toggleBtnPrevDays.textContent = 'Toggle Previous Days';
+        toggleBtnPrevDays.textContent = 'Previous Days';
         toggleBtnPrevDays.id = 'customBtnPrevDays';
         toggleBtnPrevDays.style.position = 'inherit';
         toggleBtnPrevDays.style.marginRight = '20px';
@@ -247,7 +256,7 @@
 
         // Create the toggle button and add it to the top of the page
         const toggleBtnFutureDays = document.createElement('button');
-        toggleBtnFutureDays.textContent = 'Toggle Future Days';
+        toggleBtnFutureDays.textContent = 'Future Days';
         toggleBtnFutureDays.id = 'customBtnFutureDays';
         toggleBtnFutureDays.style.position = 'inherit';
         toggleBtnFutureDays.style.marginRight = '20px';
@@ -343,16 +352,18 @@
     function onRefreshOrBlur() {
          if (showAlerts) { alert("in onRefreshOrBlur!"); };
         console.log('Page refreshed or blurred!');
-        addCustomBtns();
         formatRows();
+        addCustomBtns();
         // Add your custom logic here
     }
 
     // Execute onPageLoad when the page initially loads
-    onPageLoad();
+    window.addEventListener('load', onPageLoad);
+    //onPageLoad();
 
     // Execute onRefreshOrBlur when the page is refreshed or blurred
-    window.addEventListener('beforeunload', onRefreshOrBlur);
+    //window.addEventListener('load', onRefreshOrBlur);
+    //window.addEventListener('beforeunload', onRefreshOrBlur);
     window.addEventListener('blur', onRefreshOrBlur);
 
 })();
