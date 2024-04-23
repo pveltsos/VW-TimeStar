@@ -103,7 +103,7 @@
             const date00 = date;
             console.log(date00);
             // Check if the date corresponds to a weekend (Saturday or Sunday)
-            if (date00 <= today) {
+            if (date00 <= today && date.getDay() >= 1 && date.getDay() <= 5) {
                 // Hide the <div> element
                 div.style.display = arePrevWeeksRowsHidden ? 'none' : 'block';
             }
@@ -135,7 +135,7 @@
             const date00 = date;
             console.log(date00);
             // Check if the date corresponds to a weekend (Saturday or Sunday)
-            if (date00 >= tomorrow01) {
+            if (date00 >= tomorrow01 && date.getDay() >= 1 && date.getDay() <= 5) {
                 // Hide the <div> element
                 div.style.display = areFutureWeeksRowsHidden ? 'none' : 'block';
             }
@@ -173,6 +173,7 @@
         formatRows();
         hideFutureDays();
         hidePrevDays();
+        hideWeekendDivs();
         isOnlyToday = !isOnlyToday;
         const btn2Update = document.getElementById('customBtnToday');
         if (isOnlyToday) {
@@ -343,9 +344,8 @@
     // Function to run when the page completes loading
     function onPageLoad() {
         console.log('Page loaded!');
-        addCustomBtns();
         formatRows();
-        // Add your custom logic here
+        addCustomBtns();
     }
 
     // Function to run when the page is refreshed or loses focus
@@ -354,7 +354,6 @@
         console.log('Page refreshed or blurred!');
         formatRows();
         addCustomBtns();
-        // Add your custom logic here
     }
 
     // Execute onPageLoad when the page initially loads
@@ -362,8 +361,7 @@
     //onPageLoad();
 
     // Execute onRefreshOrBlur when the page is refreshed or blurred
-    //window.addEventListener('load', onRefreshOrBlur);
-    //window.addEventListener('beforeunload', onRefreshOrBlur);
+    window.addEventListener('beforeunload', onRefreshOrBlur);
     window.addEventListener('blur', onRefreshOrBlur);
 
 })();
