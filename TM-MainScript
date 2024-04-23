@@ -171,10 +171,14 @@
     function showOnlyToday() {
         console.log('running showOnlyToday!');
         formatRows();
+        arePrevWeeksRowsHidden = !arePrevWeeksRowsHidden;
+        areFutureWeeksRowsHidden = !areFutureWeeksRowsHidden;
+        areWeekendRowsHidden = !areWeekendRowsHidden;
+        isOnlyToday = !isOnlyToday;
+        //hide all other rows (weekends, previous and next)
         hideFutureDays();
         hidePrevDays();
         hideWeekendDivs();
-        isOnlyToday = !isOnlyToday;
         const btn2Update = document.getElementById('customBtnToday');
         if (isOnlyToday) {
             btn2Update.textContent = 'Show All Days';
@@ -314,8 +318,6 @@
         // Add event listener to the button
         toggleBtnToday.addEventListener('click', () => {
             //isTodayHidden = !isTodayHidden;
-            arePrevWeeksRowsHidden = !arePrevWeeksRowsHidden;
-            areFutureWeeksRowsHidden = !areFutureWeeksRowsHidden;
             //toggleToday();
             showOnlyToday();
         });
